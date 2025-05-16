@@ -49,6 +49,14 @@ class UseLoggingRedactor:
         logging.setLoggerClass(self.previous_log_default)
         return True
 
+    async def __aenter__(self):
+        self.previous_log_default = logging.getLoggerClass()
+        logging.setLoggerClass(LoggingRedactor)
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        logging.setLoggerClass(self.previous_log_default)
+        return True
+
 
 class LogRedactorMessage:
     """Context manager that forces redacted messages"""
@@ -58,6 +66,14 @@ class LogRedactorMessage:
         logging.setLogRecordFactory(LoggingRedactorRecord)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        logging.setLogRecordFactory(self.previous_logrecord_default)
+        return True
+
+    async def __aenter__(self):
+        self.previous_logrecord_default = logging.getLogRecordFactory()
+        logging.setLogRecordFactory(LoggingRedactorRecord)
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
         logging.setLogRecordFactory(self.previous_logrecord_default)
         return True
 

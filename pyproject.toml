@@ -32,6 +32,7 @@ classifiers = [
 testing = [
   "pytest",
   "pytest-cov",
+  "pytest-asyncio",
   "tox",
 ]
 [project.urls]
@@ -45,3 +46,4 @@ addopts = "--cov --cov-report term-missing"
 testpaths = [
     "tests"
 ]
+asyncio_mode = "auto"

@@ -47,6 +47,36 @@ def test_LogRedactorMessage(secret, log_msg, expected_msg, caplog):
     assert expected_msg in caplog.text
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "secret, log_msg, expected_msg",
+    [
+        (
+            "",
+            "Whoa, that's a pretty cool redactor!",
+            "Whoa, that's a pretty cool redactor!",
+        ),
+        (
+            "cool",
+            "Whoa, that's a pretty cool redactor!",
+            "Whoa, that's a pretty ***** redactor!",
+        ),
+        (
+            "need-a-longer-secret-to-hide",
+            "thats a need-a-longer-secret-to-hide",
+            "thats a ne***de",
+        ),
+    ],
+)
+async def test_async_LogRedactorMessage(secret, log_msg, expected_msg, caplog):
+    logger = logging.getLogger()
+    if secret:
+        add_secret(secret)
+    async with LogRedactorMessage():
+        logger.warning(log_msg)
+    assert expected_msg in caplog.text
+
+
 def test_remove_secret(caplog):
     logger = logging.getLogger()
     add_secret("secret")
@@ -73,6 +103,29 @@ def test_UseLoggingRedactor(caplog, capsys):
     key = "JHKLASDJKQWEBBNMASDHJK:LGHJKWQE"
     add_secret(key)
     with UseLoggingRedactor():
+        logger_bb = logging.getLogger("beans.beans")
+
+    sh_bb = logging.StreamHandler()
+    sh_bb.setFormatter(logging.Formatter("beanbean - %(message)s"))
+    logger_bb.addHandler(sh_bb)
+
+    logger_b = logging.getLogger("beans")
+    sh_b = logging.StreamHandler()
+    sh_b.setFormatter(logging.Formatter("bean - %(message)s"))
+    logger_b.addHandler(sh_b)
+
+    logger_bb.warning("Assigned key: %s", key)
+    assert key not in caplog.text
+    msgs = [x for x in capsys.readouterr().err.splitlines()]
+    assert "beanbean - Assigned key: JH***QE" in msgs
+    assert "bean - Assigned key: JH***QE" in msgs
+
+
+@pytest.mark.asyncio
+async def test_async_UseLoggingRedactor(caplog, capsys):
+    key = "JHKLASDJKQWEBBNMASDHJK:LGHJKWQE"
+    add_secret(key)
+    async with UseLoggingRedactor():
         logger_bb = logging.getLogger("beans.beans")
 
     sh_bb = logging.StreamHandler()
