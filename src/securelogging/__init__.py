@@ -4,6 +4,7 @@ __all__ = [
     "UseLoggingRedactor",
     "LogRedactorMessage",
 ]
+import contextlib
 import logging
 
 __SECRETS__ = set()
@@ -26,7 +27,8 @@ def remove_secret(secret: str) -> None:
     :param secret: Secret to be removed
     """
     global __SECRETS__
-    __SECRETS__.remove(secret)
+    with contextlib.suppress(KeyError):
+        __SECRETS__.remove(secret)
 
 
 def reset_secrets() -> None:
