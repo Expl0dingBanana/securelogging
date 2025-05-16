@@ -45,7 +45,7 @@ To accomplish this, we need to define the key and add it to secret. When
 we generate our logger, we do it within ``UseLoggingRedactor``. When
 the message is logged, it will appear as `beanbean - Assigned key: JH***QE`
 
-.. code-block::python
+.. code-block:: python
 
    from securelogging import add_secret, UseLoggingRedactor
    import logging
@@ -72,7 +72,7 @@ but will do so with the redacted message. The output of this will be
    bean - Assigned key: JH***QE
 
 
-.. code-block::python
+.. code-block:: python
 
    from securelogging import add_secret, UseLoggingRedactor
    import logging
@@ -105,7 +105,7 @@ redacted. The output of this will be
    Assigned non-redacted key: JH***QE
 
 
-.. code-block::python
+.. code-block:: python
 
    from securelogging import add_secret, LogRedactorMessage
    import logging
